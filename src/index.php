@@ -1,36 +1,37 @@
 <?php
 session_start();
-$pdo = new PDO("mysql:host=localhost;dbname=fantaciosfi;charset=utf8", "root", "");
+include 'components.php';
+require_once 'DAO/db.php';
+require_once 'DAO/MatchDAO.php';
+require_once 'DAO/TeamDAO.php';
+require_once 'DAO/BetDAO.php';
+require_once 'DAO/UserDAO.php';
+$matchDAO = new MatchDAO($pdo);
+$userDAO = new UserDAO($pdo);
+$betDAO = new BetDAO($pdo);
+$teamDAO = new TeamDAO($pdo);
 
 $user_id = 1;
-
-// carico le partite
-$sql = "SELECT p.*, s1.nome AS squadra1, s2.nome AS squadra2
-        FROM partite p
-        JOIN squadre s1 ON p.squadra1 = s1.id
-        JOIN squadre s2 ON p.squadra2 = s2.id";
-$partite = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-// saldo utente
-$saldo = $pdo->query("SELECT saldo FROM utenti WHERE id=$user_id")->fetchColumn();
+$partite = $matchDAO->getAll();
+$balance = $userDAO->getBalance($user_id);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $partita_id = $_POST["partita_id"];
-    $scelta = $_POST["scelta"];
-    $importo = (int)$_POST["importo"];
-
-    if ($saldo < $importo) {
+    $match_id = $_POST["match_id"];
+    $choice = $_POST["choice"];
+    $amount = (int)$_POST["amount"];
+    if ($balance < $amount) {
         die("Saldo insufficiente!");
     }
-
-    $stmt = $pdo->prepare("INSERT INTO giocate (partite_id, user_id, scelta, importo) VALUES (?, ?, ?, ?)");
-    $stmt->execute([$partita_id, $user_id, $scelta, $importo]);
-
-    $stmt = $pdo->prepare("UPDATE utenti SET saldo = saldo - ? WHERE id = ?");
-    $stmt->execute([$importo, $user_id]);
-
-    header("Location: storico.php");
-    exit;
+    $newBalance = $balance - $amount;
+    try{
+      $betDAO->addBet($match_id,$user_id,$choice,$amount);  
+      $userDAO->updateBalance($newBalance, $user_id);
+      header("Location: storico.php");
+      exit;
+    }catch(PDOException $e ){
+      $errorMessage = 'Hai già scommesso su questa partita!';
+    }   
+    
 }
 ?>
 
@@ -43,54 +44,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body class="bg-light">
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-  <div class="container">
-    <a class="navbar-brand" href="#">Fantaciosfi</a>
-    <div class="d-flex">
-      <span class="navbar-text text-white me-3">Saldo: €<?= htmlspecialchars($saldo) ?></span>
-      <a href="storico.php" class="btn btn-outline-light btn-sm">Storico</a>
-    </div>
-  </div>
-</nav>
+<?php createNavbar($balance, 'storico', 'Vai allo storico'); ?>
 
 <div class="container">
   <h1 class="mb-4">Partite disponibili</h1>
 
   <div class="row">
     <?php foreach ($partite as $p): ?>
-      <div class="col-md-6 col-lg-4 mb-4">
+      <div class="col-md-12 col-lg-6 mb-4">
         <div class="card shadow-sm">
           <div class="card-body">
             <h5 class="card-title">
-              <?= htmlspecialchars($p["squadra1"]) ?> vs <?= htmlspecialchars($p["squadra2"]) ?>
+              <?= htmlspecialchars($p["team1"]) ?> vs <?= htmlspecialchars($p["team2"]) ?>
             </h5>
             <p class="card-text">
-              <b>Data:</b> <?= htmlspecialchars($p["data_partita"]) ?>
+              <b>Data:</b> <?= htmlspecialchars($p["match_date"]) ?>
             </p>
 
             <form method="POST">
-              <input type="hidden" name="partita_id" value="<?= $p["id"] ?>">
+              <input type="hidden" name="match_id" value="<?= $p["id"] ?>">
 
-              <div class="mb-3">
+              <div class="col-md-12 col-lg-6 mb-3">
                 <label class="form-label d-block">Scegli l'esito:</label>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="scelta" value="1" required>
-                  <label class="form-check-label"><?= htmlspecialchars($p["squadra1"]) ?> vince</label>
+                  <input class="form-check-input" type="radio" name="choice" value="W1" required>
+                  <label class="form-check-label"><?= htmlspecialchars($p["team1"]) ?> vince</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="scelta" value="X">
+                  <input class="form-check-input" type="radio" name="choice" value="X">
                   <label class="form-check-label">Pareggio</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="scelta" value="2">
-                  <label class="form-check-label"><?= htmlspecialchars($p["squadra2"]) ?> vince</label>
+                  <input class="form-check-input" type="radio" name="choice" value="W2">
+                  <label class="form-check-label"><?= htmlspecialchars($p["team2"]) ?> vince</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="choice" value="G">
+                  <label class="form-check-label">Gol</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="choice" value="NG">
+                  <label class="form-check-label">No gol</label>
                 </div>
               </div>
 
               <div class="mb-3">
                 <label class="form-label">Importo (€):</label>
-                <input type="number" class="form-control" name="importo" min="1" max="<?= $saldo ?>" required>
+                <input type="number" class="form-control" name="amount" min="1" max="<?= $balance ?>" required>
               </div>
 
               <button type="submit" class="btn btn-primary w-100">Scommetti</button>
@@ -101,7 +101,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php endforeach; ?>
   </div>
 </div>
-
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="errorModalLabel">Errore</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <?= htmlspecialchars($errorMessage) ?>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    <?php if(!empty($errorMessage)): ?>
+        var errorModalEl = document.getElementById('errorModal');
+        if (errorModalEl) {
+            var myModal = new bootstrap.Modal(errorModalEl);
+            myModal.show();
+        }
+    <?php endif; ?>
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

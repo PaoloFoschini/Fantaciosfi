@@ -1,22 +1,21 @@
 <?php
 session_start();
-$pdo = new PDO("mysql:host=localhost;dbname=fantaciosfi;charset=utf8", "root", "");
-$user_id = 1;
+include 'components.php';
+require_once 'DAO/db.php';
+require_once 'DAO/MatchDAO.php';
+require_once 'DAO/TeamDAO.php';
+require_once 'DAO/BetDAO.php';
+require_once 'DAO/UserDAO.php';
+$matchDAO = new MatchDAO($pdo);
+$userDAO = new UserDAO($pdo);
+$betDAO = new BetDAO($pdo);
+$teamDAO = new TeamDAO($pdo);
 
-// query giocate utente
-$sql = "SELECT g.*, p.data_partita, s1.nome AS squadra1, s2.nome AS squadra2
-        FROM giocate g
-        JOIN partite p ON g.partite_id = p.id
-        JOIN squadre s1 ON p.squadra1 = s1.id
-        JOIN squadre s2 ON p.squadra2 = s2.id
-        WHERE g.user_id = ?
-        ORDER BY p.data_partita DESC";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$user_id]);
-$giocate = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$user_id = 1;
+$giocate = $betDAO->getUserBets($user_id);
 
 // saldo utente
-$saldo = $pdo->query("SELECT saldo FROM utenti WHERE id=$user_id")->fetchColumn();
+$balance = $userDAO->getBalance($user_id);
 ?>
 
 <!DOCTYPE html>
@@ -28,24 +27,11 @@ $saldo = $pdo->query("SELECT saldo FROM utenti WHERE id=$user_id")->fetchColumn(
 </head>
 <body class="bg-light">
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-  <div class="container">
-    <a class="navbar-brand" href="index.php">Scommesse</a>
-    <div class="d-flex">
-      <span class="navbar-text text-white me-3">
-        Saldo: <span class="badge bg-success">€<?= htmlspecialchars($saldo) ?></span>
-      </span>
-      <a href="index.php" class="btn btn-outline-light btn-sm">Torna alle partite</a>
-    </div>
-  </div>
-</nav>
-
+<?php createNavbar($balance, 'index', 'Torna alla home')?>;
 <div class="container">
-  <h1 class="mb-4">Storico delle tue scommesse</h1>
-
-  <?php if (count($giocate) > 0): ?>
-    <div class="table-responsive">
+  <h1 class="mb-4">Storico scommesse</h1>
+<div class="table-responsive">
+  <?php if(count($giocate)>0):?>
       <table class="table table-striped table-hover align-middle shadow-sm">
         <thead class="table-dark">
           <tr>
@@ -56,20 +42,24 @@ $saldo = $pdo->query("SELECT saldo FROM utenti WHERE id=$user_id")->fetchColumn(
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($giocate as $g): ?>
+          <?php foreach ($giocate as $g): 
+            $choice = $g["choice"];
+            ?>
             <tr>
-              <td><?= htmlspecialchars($g["squadra1"]) ?> vs <?= htmlspecialchars($g["squadra2"]) ?></td>
-              <td><?= htmlspecialchars($g["data_partita"]) ?></td>
+              <td><?= htmlspecialchars($g["team1"]) ?> vs <?= htmlspecialchars($g["team2"]) ?></td>
+              <td><?= htmlspecialchars($g["match_date"]) ?></td>
               <td>
-                <?php if ($g["scelta"] === "1"): ?>
-                  <span class="badge bg-primary"><?= htmlspecialchars($g["squadra1"]) ?> vince</span>
-                <?php elseif ($g["scelta"] === "2"): ?>
-                  <span class="badge bg-danger"><?= htmlspecialchars($g["squadra2"]) ?> vince</span>
-                <?php else: ?>
-                  <span class="badge bg-warning text-dark">Pareggio</span>
-                <?php endif; ?>
+                <?php switch($choice) {
+                  case "W1": $label = htmlspecialchars($g["team1"]) . " vince"; $badgeClass = "bg-primary"; break;
+                  case "W2": $label = htmlspecialchars($g["team2"]) . " vince"; $badgeClass = "bg-danger"; break;
+                  case "X":  $label = "Pareggio"; $badgeClass = "bg-warning text-dark"; break;
+                  case "G":  $label = "Gol"; $badgeClass = "bg-warning text-dark"; break;
+                  case "NG": $label = "No gol"; $badgeClass = "bg-warning text-dark"; break;
+                  default:   $label = "Scelta sconosciuta"; $badgeClass = "bg-secondary"; break;
+                } ?>
+                  <span class="badge <?= $badgeClass ?>"><?= $label ?></span>
               </td>
-              <td><span class="fw-bold"><?= htmlspecialchars($g["importo"]) ?></span> crediti</td>
+              <td><span class="fw-bold"><?= htmlspecialchars($g["amount"]) ?></span> crediti</td>
             </tr>
           <?php endforeach; ?>
         </tbody>
