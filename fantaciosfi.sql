@@ -70,3 +70,5 @@ SELECT * FROM giocate;
 SELECT partite.*, casa.nome AS casa, ospiti.nome AS ospiti FROM partite
 	JOIN squadre casa ON partite.squadra1=casa.id
 	JOIN squadre ospiti ON partite.squadra2=ospiti.id;
+
+DELETE FROM giocate;
