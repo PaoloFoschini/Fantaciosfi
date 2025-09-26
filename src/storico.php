@@ -29,7 +29,8 @@ $balance = $userDAO->getBalance($user_id);
 
 <body class="bg-light">
 
-  <?php createNavbar($balance, 'index', 'Torna alla home') ?>;
+  <?php createNavbar($balance, 'index', 'Torna alla home', 'openBets', 'Vai alle scommesse aperte') ?>;
+
   <div class="container">
     <h1 class="mb-4">Storico scommesse</h1>
     <div class="table-responsive">

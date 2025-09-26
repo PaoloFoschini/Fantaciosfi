@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body class="bg-light">
 
-  <?php createNavbar($balance, 'storico', 'Vai allo storico'); ?>
+  <?php createNavbar($balance, 'storico', 'Vai allo storico', 'openBets', 'Vai alle scommesse aperte') ?>;
 
   <div class="container">
     <h1 class="mb-4">Partite disponibili</h1>
