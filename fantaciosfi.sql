@@ -13,11 +13,11 @@ CREATE TABLE IF NOT EXISTS matches(
 	team1 BIGINT UNSIGNED NOT NULL REFERENCES teams(id),
 	team2 BIGINT UNSIGNED NOT NULL REFERENCES teams(id),
 	match_date DATE NOT NULL,
-	W1 float NOT NULL,
-	X float NOT NULL,
-	W2 float NOT NULL,
-	G float NOT NULL,
-	NG float NOT NULL,
+	GW1 float NOT NULL,
+	GX float NOT NULL,
+	GW2 float NOT NULL,
+	GG float NOT NULL,
+	GNG float NOT NULL,
 	CHECK(team1<>team2)
 );
 

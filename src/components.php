@@ -3,7 +3,7 @@ function createNavbar($balance, $target, $name) {
     ?>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
       <div class="container">
-        <a class="navbar-brand" href="index.php">Scommesse</a>
+        <a class="navbar-brand" href="index.php">Fantaschedine</a>
         <div class="d-flex">
           <span class="navbar-text text-white me-3">
             Saldo: <span class="badge bg-success">€<?= htmlspecialchars($balance) ?></span>

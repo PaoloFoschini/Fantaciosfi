@@ -31,10 +31,16 @@ class BetDAO
         JOIN teams t1 ON m.team1 = t1.id
         JOIN teams t2 ON m.team2 = t2.id
         WHERE b.user_id = ?
-        ORDER BY m.match_date DESC
-    ";
+        ORDER BY m.match_date DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$user_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getBetQuotes(int $match_id)
+    {
+        $stmt = $this->pdo->prepare("SELECT GW1, GW2, GX, GG, GNG FROM matches WHERE id = ?");
+        $stmt->execute([$match_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
