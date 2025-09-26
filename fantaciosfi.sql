@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS matches(
 	team1 BIGINT UNSIGNED NOT NULL REFERENCES teams(id),
 	team2 BIGINT UNSIGNED NOT NULL REFERENCES teams(id),
 	match_start_date DATETIME NOT NULL,
-	match_finish_date DATETIME NOT NULL,
+	match_finish_date DATETIME,
 	league VARCHAR(20) NOT NULL,
 	GW1 float NOT NULL,
 	GX float NOT NULL,
@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS users(
 	email VARCHAR(50) NOT NULL,
 	name VARCHAR(30) NOT NULL,
 	surname VARCHAR(30) NOT NULL,
+	teamname VARCHAR(30) NOT NULL,
 	role INT UNSIGNED NOT NULL,
 	balance INT UNSIGNED NOT NULL
 );
@@ -41,8 +42,8 @@ CREATE TABLE IF NOT EXISTS bets(
 );
 
 INSERT INTO users VALUES
-(null, 'paolo.foschini@gmail.com', 'Paolo', 'Fosc', 1, 30),
-(null, 'francesco.foschini@gmail.com', 'Fra', 'Fos', 0, 0);
+(null, 'paolo.foschini@gmail.com', 'Paolo', 'Fosc', 'superteam', 1, 30),
+(null, 'francesco.foschini@gmail.com', 'Fra', 'Fos', 'tinyteam', 0, 0);
 
 SELECT * FROM users;
 
@@ -73,3 +74,5 @@ SELECT matches.*, home.name AS home, away.name AS away FROM matches
 	JOIN teams away ON matches.team2=away.id;
 
 DELETE FROM bets;
+
+GRANT select, insert, update, delete ON fantaciosfi.* TO 'www-data'@localhost;
