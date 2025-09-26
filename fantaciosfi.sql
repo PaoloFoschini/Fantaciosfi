@@ -12,7 +12,9 @@ CREATE TABLE IF NOT EXISTS matches(
 	id BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	team1 BIGINT UNSIGNED NOT NULL REFERENCES teams(id),
 	team2 BIGINT UNSIGNED NOT NULL REFERENCES teams(id),
-	match_date DATE NOT NULL,
+	match_start_date DATETIME NOT NULL,
+	match_finish_date DATETIME NOT NULL,
+	league VARCHAR(20) NOT NULL,
 	GW1 float NOT NULL,
 	GX float NOT NULL,
 	GW2 float NOT NULL,
@@ -53,8 +55,8 @@ INSERT INTO teams VALUES
 SELECT * FROM teams;
 
 INSERT INTO matches VALUES
-(null, 1, 2, '2025-09-20', 1.01, 1.02, 10.3, 1.04, 1.05),
-(null, 3, 4, '2025-09-23', 2.01, 3.02, 4.3, 5.04, 6.05);
+(null, 1, 2, '2025-09-20 20:45:00', null, 'Serie A', 1.01, 1.02, 10.3, 1.04, 1.05),
+(null, 3, 4, '2025-09-23 18:30:00', '2025-09-23 20:45:00', 'Bundesliga', 2.01, 3.02, 4.3, 5.04, 6.05);
 
 SELECT * FROM matches;
 

@@ -14,7 +14,8 @@ $teamDAO = new TeamDAO($pdo);
 
 $user_id = 1;
 $partite = $matchDAO->getAll();
-$balance = $userDAO->getBalance($user_id);
+$user = $userDAO->getUser($user_id);
+$balance = $user['balance'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $match_id = $_POST["match_id"];
@@ -40,16 +41,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Homepage - Fantaciosfi</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
 
-  <?php createNavbar($balance, 'storico', 'Vai allo storico', 'openBets', 'Vai alle scommesse aperte') ?>;
+  <?php createNavbar($balance, 'index', 'openBets', 'storico') ?>;
 
   <div class="container">
-    <h1 class="mb-4">Partite disponibili</h1>
 
     <div class="row">
       <?php foreach ($partite as $p): ?>
@@ -57,12 +58,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="col-md-12 col-lg-6 mb-4">
           <div class="card shadow-sm">
             <div class="card-body">
-              <h5 class="card-title">
-                <?= htmlspecialchars($p["team1"]) ?> vs <?= htmlspecialchars($p["team2"]) ?>
-              </h5>
               <p class="card-text">
-                <b>Data:</b> <?= htmlspecialchars($p["match_date"]) ?>
-              </p>
+              <h3><?= date("d/m/Y H:i", strtotime($p["match_start_date"])) ?> </h3>
+              <br>
+              <h5> <?= htmlspecialchars($p["league"]) ?> </h5>
+              <b class="card-title">
+                <?= htmlspecialchars($p["team1"]) ?> <br> <?= htmlspecialchars($p["team2"]) ?>
+              </b>
+
 
               <form method="POST">
                 <input type="hidden" name="match_id" value="<?= $p["id"] ?>">
@@ -103,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="mb-3">
                   <label class="form-label">Importo (€):</label>
-                  <input type="number" class="form-control" name="amount" min="1" max="5" required>
+                  <input type="number" class="form-control" name="amount" min="1" max="3" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">Scommetti</button>

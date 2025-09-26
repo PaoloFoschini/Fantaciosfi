@@ -13,9 +13,8 @@ $teamDAO = new TeamDAO($pdo);
 
 $user_id = 1;
 $giocate = $betDAO->getUserBets($user_id);
-
-// saldo utente
-$balance = $userDAO->getBalance($user_id);
+$user = $userDAO->getUser($user_id);
+$balance = $user['balance'];
 ?>
 
 <!DOCTYPE html>
@@ -23,13 +22,14 @@ $balance = $userDAO->getBalance($user_id);
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Storico scommesse</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
 
-  <?php createNavbar($balance, 'index', 'Torna alla home', 'openBets', 'Vai alle scommesse aperte') ?>;
+  <?php createNavbar($balance, 'index', 'openBets', 'storico') ?>;
 
   <div class="container">
     <h1 class="mb-4">Storico scommesse</h1>
@@ -51,7 +51,7 @@ $balance = $userDAO->getBalance($user_id);
             ?>
               <tr>
                 <td><?= htmlspecialchars($g["team1"]) ?> vs <?= htmlspecialchars($g["team2"]) ?></td>
-                <td><?= htmlspecialchars($g["match_date"]) ?></td>
+                <td><?= htmlspecialchars($g["match_start_date"]) ?></td>
                 <td>
                   <?php switch ($choice) {
                     case "W1":

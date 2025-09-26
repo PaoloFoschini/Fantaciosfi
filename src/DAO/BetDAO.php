@@ -25,13 +25,13 @@ class BetDAO
     public function getUserBets(int $user_id)
     {
         $sql = "
-        SELECT b.*, m.match_date, t1.name AS team1, t2.name AS team2
+        SELECT b.*, m.*, t1.name AS team1, t2.name AS team2
         FROM bets b
         JOIN matches m ON b.match_id = m.id
         JOIN teams t1 ON m.team1 = t1.id
         JOIN teams t2 ON m.team2 = t2.id
         WHERE b.user_id = ?
-        ORDER BY m.match_date DESC";
+        ORDER BY m.match_start_date DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$user_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
