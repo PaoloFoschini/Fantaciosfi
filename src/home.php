@@ -21,6 +21,10 @@ $teamDAO = new TeamDAO($pdo);
 
 $partite = $matchDAO->getAll();
 $user = $userDAO->getUser($_SESSION['user']['email']);
+if($user===false) {
+	http_error_code(401);
+	die;
+}
 $user_id = $user['id'];
 $balance = $user['balance'];
 
