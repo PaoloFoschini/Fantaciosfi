@@ -33,12 +33,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
   $newBalance = $balance - $amount;
   try {
-    $betDAO->addBet($match_id, $user_id, $choice, $amount);
+    $mul= $matchDAO->getQuotaByChoice($match_id, $choice);
+    //stampa l'errore
+    if ($mul === null) {
+      throw new Exception("Quota non trovata per la scelta selezionata.");
+    }
+    $betDAO->addBet($match_id, $user_id, $choice, $amount, $mul);
     $userDAO->updateBalance($newBalance, $user_id);
-    header("Location: storico.php");
-    exit;
-  } catch (PDOException $e) {
-    $errorMessage = 'Hai già scommesso su questa partita!';
+  //} catch (PDOException $e) {
+    //$errorMessage = 'Hai già scommesso su questa partita!';
+  } catch (Exception $e) {
+    $errorMessage = $e->getMessage();
   }
 }
 ?>
@@ -70,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <br>
               <h5> <?= htmlspecialchars($p["league"]) ?> </h5>
               <b class="card-title">
-                <?= htmlspecialchars($p["team1"]) ?> <br> <?= htmlspecialchars($p["team2"]) ?>
+                <?= htmlspecialchars($p["team1name"]) ?> <br> <?= htmlspecialchars($p["team2name"]) ?>
               </b>
 
 
@@ -82,19 +87,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <div class="form-check">
                     <input class="form-check-input" type="radio" name="choice" value="W1" required>
                     <label class="form-check-label">
-                      <?= htmlspecialchars($p["team1"]) ?> vince (<?= htmlspecialchars($quote["GW1"]) ?>)
+                      1 (<?= htmlspecialchars($quote["GW1"]) ?>)
                     </label>
                   </div>
                   <div class="form-check">
                     <input class="form-check-input" type="radio" name="choice" value="X">
                     <label class="form-check-label">
-                      Pareggio (<?= htmlspecialchars($quote["GX"]) ?>)
+                      X (<?= htmlspecialchars($quote["GX"]) ?>)
                     </label>
                   </div>
                   <div class="form-check">
                     <input class="form-check-input" type="radio" name="choice" value="W2">
                     <label class="form-check-label">
-                      <?= htmlspecialchars($p["team2"]) ?> vince (<?= htmlspecialchars($quote["GW2"]) ?>)
+                      2 (<?= htmlspecialchars($quote["GW2"]) ?>)
                     </label>
                   </div>
                   <div class="form-check">
@@ -106,14 +111,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <div class="form-check">
                     <input class="form-check-input" type="radio" name="choice" value="NG">
                     <label class="form-check-label">
-                      No gol (<?= htmlspecialchars($quote["GNG"]) ?>)
+                      NoGol (<?= htmlspecialchars($quote["GNG"]) ?>)
                     </label>
                   </div>
                 </div>
 
                 <div class="mb-3">
                   <label class="form-label">Importo (€):</label>
-                  <input type="number" class="form-control" name="amount" min="1" max="3" required>
+                  <input type="number" class="form-control" name="amount" min="1" max="5" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">Scommetti</button>

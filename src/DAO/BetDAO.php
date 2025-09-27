@@ -13,13 +13,14 @@ class BetDAO
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function addBet(int $match_id, int $user_id, string $choice, float $amount)
+    public function addBet(int $match_id, int $user_id, string $choice, float $amount, float $mul)
     {
         $stmt = $this->pdo->prepare("
-                INSERT INTO bets (match_id, user_id, choice, amount)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO bets (match_id, user_id, choice, amount, payout)
+                VALUES (?, ?, ?, ?, ?)
             ");
-        return $stmt->execute([$match_id, $user_id, $choice, $amount]);
+        $payout = round($amount * $mul, 2);
+        return $stmt->execute([$match_id, $user_id, $choice, $amount, $payout]);
     }
 
     public function getUserBets(int $user_id)
@@ -42,5 +43,16 @@ class BetDAO
         $stmt = $this->pdo->prepare("SELECT GW1, GW2, GX, GG, GNG FROM matches WHERE id = ?");
         $stmt->execute([$match_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function getByMatch(int $matchId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM bets WHERE match_id=?");
+        $stmt->execute([$matchId]);
+        return $stmt->fetchAll();
+    }
+
+    public function payBet(int $matchId, int $userId, int $payout): void {
+        $sql = "UPDATE bets SET paid=1, payout=? WHERE match_id=? AND user_id=?";
+        $this->pdo->prepare($sql)->execute([$payout, $matchId, $userId]);
     }
 }

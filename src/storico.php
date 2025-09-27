@@ -49,11 +49,13 @@ $balance = $user['balance'];
               <th scope="col">Scelta</th>
               <th scope="col">Quota</th>
               <th scope="col">Importo</th>
+              <th scope="col">Vincita</th>
             </tr>
           </thead>
           <tbody>
             <?php foreach ($giocate as $g):
               $choice = $g["choice"];
+              if($g['paid']==true):
             ?>
               <tr>
                 <td><?= htmlspecialchars($g["team1"]) ?> vs <?= htmlspecialchars($g["team2"]) ?></td>
@@ -114,8 +116,9 @@ $balance = $user['balance'];
                   <span class="fw-bold"><?= htmlspecialchars($quota) ?></span>
                 </td>
                 <td><span class="fw-bold"><?= htmlspecialchars($g["amount"]) ?></span> crediti</td>
+                <td><span class="fw-bold"><?= htmlspecialchars($g["payout"]) ?></span> crediti</td>
               </tr>
-            <?php endforeach; ?>
+            <?php endif; endforeach; ?>
           </tbody>
         </table>
     </div>

@@ -42,6 +42,7 @@ $balance = $user['balance'];
             <?php if (count($giocate) > 0): ?>
                 <?php foreach ($giocate as $g):
                     $choice = $g["choice"];
+                    if($g['paid']==false):
                 ?>
                     <div class="card">
                         <div class="card-body">
@@ -49,13 +50,13 @@ $balance = $user['balance'];
                             <br>
                             <?= htmlspecialchars($g["league"]) ?>
                             <br>
-                            <?= htmlspecialchars($g["team1"]) ?> vs <?= htmlspecialchars($g["team2"]) ?>
+                            <?= htmlspecialchars($g["team1"]) ?> - <?= htmlspecialchars($g["team2"]) ?>
                             <p class="card-text">Scelta: <?= htmlspecialchars($choice) ?></p>
                             <p class="card-text">Importo: <?= htmlspecialchars($g["amount"]) ?></p>
                         </div>
                     </div>
 
-                <?php endforeach; ?>
+                <?php endif; endforeach; ?>
                 </tbody>
 
         </div>

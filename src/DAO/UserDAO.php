@@ -17,18 +17,26 @@ class UserDAO
         $stmt->execute([$newBalance, $userId]);
         return true;
     }
-/*
-    public function getUser(int $userId): array
+    public function updateBalanceAndRole(int $id, int $balance, int $role): void
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = ?");
-        $stmt->execute([$userId]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("UPDATE users SET balance=?, role=? WHERE id=?");
+        $stmt->execute([$balance, $role, $id]);
     }
-*/
+
+    public function getById(int $id): ?array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id=?");
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
+    }
     public function getUser(string $email): array|false
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function incrementBalance(int $id, int $amount): void {
+        $stmt = $this->pdo->prepare("UPDATE users SET balance = balance + ? WHERE id=?");
+        $stmt->execute([$amount, $id]);
     }
 }
