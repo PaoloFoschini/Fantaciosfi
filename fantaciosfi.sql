@@ -26,8 +26,6 @@ CREATE TABLE IF NOT EXISTS matches(
 CREATE TABLE IF NOT EXISTS users(
 	id BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	email VARCHAR(50) NOT NULL,
-	name VARCHAR(30) NOT NULL,
-	surname VARCHAR(30) NOT NULL,
 	teamname VARCHAR(30) NOT NULL,
 	role INT UNSIGNED NOT NULL,
 	balance INT UNSIGNED NOT NULL
@@ -42,8 +40,9 @@ CREATE TABLE IF NOT EXISTS bets(
 );
 
 INSERT INTO users VALUES
-(null, 'paolo.foschini@gmail.com', 'Paolo', 'Fosc', 'superteam', 1, 30),
-(null, 'francesco.foschini@gmail.com', 'Fra', 'Fos', 'tinyteam', 0, 0);
+(null, 'pol.foschini@gmail.com', 'superteam', 1, 30),
+(null, 'franci.foschini@gmail.com', 'tinyteam', 0, 10),
+(null, 'rob.foschini@gmail.com', 'tinyteam', 0, 10);
 
 SELECT * FROM users;
 
