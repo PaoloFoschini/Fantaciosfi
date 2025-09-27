@@ -1,7 +1,7 @@
 <?php
 require_once 'DAO/db.php';
 require_once 'DAO/UserDAO.php';
-function createNavbar($balance, $target1, $target2, $target3)
+function createNavbar($balance, string $target1, string $target2, string $target3)
 {
   global $pdo;
   $userDAO = new UserDAO($pdo);
@@ -9,7 +9,7 @@ function createNavbar($balance, $target1, $target2, $target3)
 ?>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container">
-      <a class="navbar-brand" href="index.php"><?= htmlspecialchars($user['name']. ' ' . $user['surname']) ?></a>
+      <a class="navbar-brand" href="home.php"><?= htmlspecialchars($user['name']. ' ' . $user['surname']) ?></a>
       <div class="d-flex">
         <span class="navbar-text text-white me-3">
           Saldo: <span class="badge bg-success"><?= htmlspecialchars($balance) ?></span>

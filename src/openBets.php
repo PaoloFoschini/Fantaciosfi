@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+// Verifica che l'utente sia loggato
+if (!isset($_SESSION['user'])) {
+    header('Location: index.php');
+    exit;
+}
+
 include 'components.php';
 require_once 'DAO/db.php';
 require_once 'DAO/MatchDAO.php';
@@ -30,7 +37,7 @@ $balance = $user['balance'];
 
 <body class="bg-light">
 
-    <?php createNavbar($balance, 'index', 'openBets', 'storico') ?>;
+    <?php createNavbar($balance, 'home', 'openBets', 'storico') ?>;
 
     <div class="container">
         <div class="table-responsive">
