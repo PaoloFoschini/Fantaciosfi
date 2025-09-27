@@ -1,18 +1,18 @@
 <?php
 session_start();
-
+require_once __DIR__ . '/config.php';
 // Verifica che l'utente sia loggato
-if (!isset($_SESSION['user'])) {
+if (PROD && !isset($_SESSION['user'])) {
     header('Location: index.php');
     exit;
 }
 
-include 'components.php';
-require_once 'DAO/db.php';
-require_once 'DAO/MatchDAO.php';
-require_once 'DAO/TeamDAO.php';
-require_once 'DAO/BetDAO.php';
-require_once 'DAO/UserDAO.php';
+require __DIR__ . '/components.php';
+require_once __DIR__ . '/DAO/db.php';
+require_once __DIR__ . '/DAO/MatchDAO.php';
+require_once __DIR__ . '/DAO/TeamDAO.php';
+require_once __DIR__ . '/DAO/BetDAO.php';
+require_once __DIR__ . '/DAO/UserDAO.php';
 $matchDAO = new MatchDAO($pdo);
 $userDAO = new UserDAO($pdo);
 $betDAO = new BetDAO($pdo);
