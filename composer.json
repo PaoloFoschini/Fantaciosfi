@@ -1,0 +1,39 @@
+{
+	"autoload": {
+		"psr-4": {
+			"App\\": "src/"
+		}
+	},
+	"name": "foschini/fairtest",
+	"type": "project",
+	"keywords": ["test", "assessment"],
+	"description": "Assessment tests for the school",
+	"homepage": "https://fairtest.cdoctor.it",
+	"minimum-stability": "stable",
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "Roberto Foschini",
+			"email": "rfoschini@gmail.com",
+			"homepage": "https://school.cdoctor.it",
+			"role": "Admin & Developer"
+		},
+		{
+			"name": "Paolo Foschini",
+			"email": "pol@gmail.com",
+			"role": "Frontend Developer"
+		}
+	],
+	"require": {
+		"php": ">=8.4",
+		"ext-pdo": "*",
+		"ext-pdo_mysql": "*",
+		"google/apiclient": "^2.0"
+	},
+	"scripts": {
+		"pre-autoload-dump": "Google\\Task\\Composer::cleanup"
+	},
+	"extra": {
+		"google/apiclient-services": [ ]
+	}
+}
