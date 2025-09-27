@@ -19,9 +19,9 @@ $userDAO = new UserDAO($pdo);
 $betDAO = new BetDAO($pdo);
 $teamDAO = new TeamDAO($pdo);
 
-$user_id = 1;
 $partite = $matchDAO->getAll();
-$user = $userDAO->getUser($user_id);
+$user = $userDAO->getUser($_SESSION['user']['email']);
+$user_id = $user['id'];
 $balance = $user['balance'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -56,7 +56,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body class="bg-light">
   <?php createNavbar($balance, 'home', 'openBets', 'storico') ?>
 
-<?= $_SESSION['user']['email'] ?>
 
   <div class="container">
 

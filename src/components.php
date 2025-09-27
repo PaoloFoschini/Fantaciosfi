@@ -5,11 +5,11 @@ function createNavbar($balance, string $target1, string $target2, string $target
 {
   global $pdo;
   $userDAO = new UserDAO($pdo);
-  $user = $userDAO->getUser(1);
+  $user = $userDAO->getUser($_SESSION['user']['email']);
 ?>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container">
-      <a class="navbar-brand" href="home.php"><?= htmlspecialchars($user['name']. ' ' . $user['surname']) ?></a>
+      <a class="navbar-brand" href="home.php"><?= htmlspecialchars($_SESSION['user']['name']. ' ' . $user['teamname']) ?></a>
       <div class="d-flex">
         <span class="navbar-text text-white me-3">
           Saldo: <span class="badge bg-success"><?= htmlspecialchars($balance) ?></span>

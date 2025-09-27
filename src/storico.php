@@ -18,9 +18,8 @@ $userDAO = new UserDAO($pdo);
 $betDAO = new BetDAO($pdo);
 $teamDAO = new TeamDAO($pdo);
 
-$user_id = 1;
-$giocate = $betDAO->getUserBets($user_id);
-$user = $userDAO->getUser($user_id);
+$user = $userDAO->getUser($_SESSION['user']['email']);
+$giocate = $betDAO->getUserBets($user['id']);
 $balance = $user['balance'];
 ?>
 
