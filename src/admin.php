@@ -1,5 +1,12 @@
 <?php
+session_start();
 require_once __DIR__ . '/config.php';
+
+if (PROD && !isset($_SESSION['user'])) {
+    header('Location: index.php');
+    exit;
+}
+
 require __DIR__ . '/components.php';
 require_once __DIR__ . '/DAO/db.php';
 require_once __DIR__ . '/DAO/MatchDAO.php';
@@ -7,15 +14,18 @@ require_once __DIR__ . '/DAO/TeamDAO.php';
 require_once __DIR__ . '/DAO/BetDAO.php';
 require_once __DIR__ . '/DAO/UserDAO.php';
 
-if (PROD && !isset($_SESSION['user'])) {
-    header('Location: index.php');
-    exit;
-}
-
 $matchDAO = new MatchDAO($pdo);
 $userDAO  = new UserDAO($pdo);
 $betDAO   = new BetDAO($pdo);
 $teamDAO  = new TeamDAO($pdo);
+
+$user = $userDAO->getUser($_SESSION['user']['email']);
+if($user['role']!=1)
+{
+	http_response_code(401);
+	exit;
+}
+
 
 // ==== FUNZIONI UTILI ====
 function h($s)
@@ -168,12 +178,15 @@ $bets    = $betDAO->getAll();
 
     <h2>Matches</h2>
     <form method="post">
-        <select name="team1"><?php foreach ($teams as $t) echo "<option value='{$t['id']}'>" . h($t['name']) . "</option>"; ?></select>
-        <select name="team2"><?php foreach ($teams as $t) echo "<option value='{$t['id']}'>" . h($t['name']) . "</option>"; ?></select>
+        <select name="team1" required><?php foreach ($teams as $t) echo "<option value='{$t['id']}'>" . h($t['name']) . "</option>"; ?></select>
+        <select name="team2" required><?php foreach ($teams as $t) echo "<option value='{$t['id']}'>" . h($t['name']) . "</option>"; ?></select>
         <input type="datetime-local" name="start" required>
         <input name="league" placeholder="League" required>
-        GW1<input name="GW1" size="3"> GX<input name="GX" size="3"> GW2<input name="GW2" size="3">
-        GG<input name="GG" size="3"> GNG<input name="GNG" size="3">
+        1<input name="GW1" type="number" value="1.00" min="1" max="10" step="0.01" required>
+	X<input name="GX" type="number" value="1.00" min="1" max="10" step="0.01" required>
+	2<input name="GW2" type="number" value="1.00" min="1" max="10" step="0.01" required>
+        Goal<input name="GG" type="number" value="1.00" min="1" max="10" step="0.01" required>
+	NoGoal<input name="GNG" type="number" value="1.00" min="1" max="10" step="0.01" required>
         <button name="add_match">Add match</button>
     </form>
     <table>

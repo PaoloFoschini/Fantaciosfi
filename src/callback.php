@@ -21,8 +21,14 @@ if (isset($_GET['code'])) {
             'name' => $userData->name,
             'email' => $userData->email,
             'picture' => $userData->picture
-        ];
-	header("Location: home.php");
+	];
+	require_once __DIR__ . '/config.php';
+	require_once __DIR__ . '/DAO/db.php';
+	require_once __DIR__ . '/DAO/UserDAO.php';
+	$userDAO = new UserDAO($pdo);
+	var_dump($userDAO);
+	$user = $userDAO->getUser($userData->email);
+	header('Location: ' . ($user['role']==0 ? 'home.php' : 'admin.php'));
 	exit;
     } else {
         echo "Errore nel login: " . htmlspecialchars($token['error']);

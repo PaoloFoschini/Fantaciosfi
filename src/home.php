@@ -40,10 +40,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $betDAO->addBet($match_id, $user_id, $choice, $amount, $mul);
     $userDAO->updateBalance($newBalance, $user_id);
-  //} catch (PDOException $e) {
-    //$errorMessage = 'Hai già scommesso su questa partita!';
-  } catch (Exception $e) {
-    $errorMessage = $e->getMessage();
+  } catch (PDOException $e) {
+    $errorMessage = 'Hai già scommesso su questa partita!';
+    // $errorMessage = $e->getMessage();
+    error_log($e->getMessage());
   }
 }
 ?>
